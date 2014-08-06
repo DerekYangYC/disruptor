@@ -24,7 +24,7 @@ apply plugin: 'idea'
 defaultTasks 'build'
 
 group = 'com.lmax'
-version = new Version(major: 3, minor: 2, revision: 1)
+version = new Version(major: 3, minor: 3, revision: 0)
 
 ext {
     fullName = 'Disruptor Framework'
@@ -48,6 +48,7 @@ eclipse.classpath.plusConfigurations += sourceSets.perf.compileClasspath
 
 idea.module {
     testSourceDirs += sourceSets.perf.allSource.getSrcDirs()
+    scopes.TEST.plus += sourceSets.perf.compileClasspath
 }
 
 repositories {
@@ -55,16 +56,17 @@ repositories {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.5', 'org.jmock:jmock-junit4:2.5.1', 'org.jmock:jmock-legacy:2.5.1', files('lib/test/hdrhistogram-1.0-SNAPSHOT.jar')
-    perfCompile 'com.github.jnr:jnr-ffi:1.0.10', 
-                files('lib/test/hdrhistogram-1.0-SNAPSHOT.jar')
+    testCompile 'junit:junit:4.5', 
+                'org.jmock:jmock-junit4:2.5.1', 
+                'org.jmock:jmock-legacy:2.5.1'
+    perfCompile 'org.hdrhistogram:HdrHistogram:1.2.1'
 }
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 tasks.withType(Compile) {
-    options.compilerArgs << '-XDignore.symbol.file' << '-Xlint:unchecked'
+    options.compilerArgs << '-XDignore.symbol.file' << '-Xlint:unchecked' << '-Xlint:deprecation'
     options.debug = true
     options.fork = true
     options.forkOptions.executable = javaCompilerExecutable
@@ -109,7 +111,7 @@ javadoc {
     options.bottom = "<i>Copyright &#169; 2011 - ${Calendar.instance[Calendar.YEAR]} LMAX Ltd. All Rights Reserved.</i>"
     options.use = true
     options.version = true
-    options.windowTitle = 'Disruptor API'
+    options.showFromPublic()
 }
 
 jar {
@@ -194,7 +196,7 @@ task tempLibs(type: Sync) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
+    gradleVersion = '1.12'
 }
 
 class Version {
